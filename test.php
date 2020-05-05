@@ -17,12 +17,7 @@ $whoFirst = readline();
 print_board();
 
 while(!$isWon) {
-  if (!in_array('_', $TheBoard)) {
-    echo "Tie!";
-    $isWon = true;
-    $isTie = true;
-  }
-  else if ($whoFirst == "y") {
+  if ($whoFirst == "y") {
     playerMove();
     print_board();
   }
@@ -32,15 +27,11 @@ while(!$isWon) {
   }
 
   checkWin();
-  if($isWon && !$isTie) {
+  if($isWon) {
     winMessage();
   }
   else {
-    if (!in_array('_', $TheBoard)) {
-      echo "Tie!";
-      $isWon = true;
-    }
-    else if ($whoFirst == "y") {
+    if ($whoFirst == "y") {
       botMove();
       print_board();
     }
@@ -50,7 +41,7 @@ while(!$isWon) {
     }
     
     checkWin();
-    if($isWon && !$isTie) {
+    if($isWon) {
       winMessage();
     }
   }
@@ -58,12 +49,18 @@ while(!$isWon) {
 
 function winMessage() {
   global $winner;
+  global $isTie;
 
   printf("\r\n");
-  if($winner == "X") {
-    printf ("Player Wins!");
-  } else {
-    printf ("Bot Wins!");
+  if($isTie) {
+    printf ("Tie!");
+  }
+  else {
+    if($winner == "X") {
+      printf ("Player Wins!");
+    } else {
+      printf ("Bot Wins!");
+    }
   }
   printf("\r\n");
 }
@@ -92,9 +89,16 @@ function botMove() {
 
   while (!$done) {
     $r = rand(0,8);
-    if ($TheBoard[$r] == "_") {
+    if ($TheBoard[4] == "_") {
+      $r = 4;
       $TheBoard[$r] = 'O';
       $done = true;
+    }
+    else {
+      if ($TheBoard[$r] == "_") {
+        $TheBoard[$r] = 'O';
+        $done = true;
+      }
     }
   }
 
@@ -106,6 +110,7 @@ function checkWin() {
   global $isWon;
   global $winner;
   global $TheBoard;
+  global $isTie;
 
   $winConditions = array("012", "345", "678", "036", "147", "258", "048", "246");
   
@@ -116,6 +121,10 @@ function checkWin() {
       $isWon = true;
       $winner = $values[0];
     }
+  }
+  if (!in_array('_', $TheBoard) && !$isWon) {
+    $isWon = true;
+    $isTie = true;
   }
 }
 
