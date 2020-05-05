@@ -71,7 +71,7 @@ function playerMove() {
   printf("\r\n");
   printf ("Player Turn...\r\n");
 
-  $step = intval(readline());
+  $step = intval(readline()) - 1;
 
   if ($TheBoard[$step] == "_")
     //set user selected tile to X
@@ -102,7 +102,7 @@ function botMove() {
     }
   }
 
-  printf ($r);
+  printf ($r + 1);
   printf("\r\n");
 }
 
