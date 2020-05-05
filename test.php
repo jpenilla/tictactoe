@@ -16,7 +16,10 @@ $whoFirst = readline();
 print_board();
 
 while(!$isWon) {
-  if ($whoFirst == "y") {
+  if (!in_array('_', $TheBoard)) {
+    echo "Tie!";
+  }
+  else if ($whoFirst == "y") {
     playerMove();
   }
   else {
@@ -30,7 +33,10 @@ while(!$isWon) {
     winMessage();
   }
   else {
-    if ($whoFirst == "y") {
+    if (!in_array('_', $TheBoard)) {
+      echo "Tie!";
+    }
+    else if ($whoFirst == "y") {
       botMove();
     }
     else {
@@ -48,7 +54,7 @@ function winMessage() {
   global $winner;
 
   printf("\r\n");
-  if($winner = "X") {
+  if($winner == "X") {
     printf ("Player Wins!");
   } else {
     printf ("Bot Wins!");
@@ -100,9 +106,9 @@ function checkWin() {
   foreach ($winConditions as $value) {
     $split = str_split($value);
     $values = array($TheBoard[$split[0]], $TheBoard[$split[1]], $TheBoard[$split[2]]);
-    if(($values[0] != "_") && ($values[0] == $values[1]) && ($values[2] == $values[0])) {
+    if(($values[0] != "_") && ($values[0] == $values[1]) && $values[2] == $values[0]) {
       $isWon = true;
-      $winner = $values[2];
+      $winner = $values[0];
     }
   }
 }
