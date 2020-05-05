@@ -2,6 +2,7 @@
 $TheBoard=array(9);
 $isWon = false;
 $winner = "";
+$isTie = false;
 
 //Initializing the board
 for ($i=0;$i<9;$i++) $TheBoard[$i]='_';
@@ -18,33 +19,38 @@ print_board();
 while(!$isWon) {
   if (!in_array('_', $TheBoard)) {
     echo "Tie!";
+    $isWon = true;
+    $isTie = true;
   }
   else if ($whoFirst == "y") {
     playerMove();
+    print_board();
   }
   else {
     botMove();
+    print_board();
   }
-  
-  print_board();
 
   checkWin();
-  if($isWon) {
+  if($isWon && !$isTie) {
     winMessage();
   }
   else {
     if (!in_array('_', $TheBoard)) {
       echo "Tie!";
+      $isWon = true;
     }
     else if ($whoFirst == "y") {
       botMove();
+      print_board();
     }
     else {
       playerMove();
+      print_board();
     }
-    print_board();
+    
     checkWin();
-    if($isWon) {
+    if($isWon && !$isTie) {
       winMessage();
     }
   }
