@@ -7,20 +7,29 @@ for ($i=0;$i<9;$i++) $TheBoard[$i]='_';
 $isWon = false;
 $winner = "";
 $isTie = false;
+$multiplayer = false;
 
 printf("Welcome to TIC-TAC-TOE EXTREME Lite\r\n");
 
-//Ask who goes first and set variable (y=player first, anything else=bot first)
+//Ask multiplayer or vs bot
+printf("\r\n");
+printf ("Play vs bot or a second player? (b/p)");
+if (readline() == "p") {
+  $multiplayer = true;
+}
+
+//Ask who goes first and set variable (n=bot first, anything else=player first)
 printf("\r\n");
 printf ("Would you like to go first? (y/n)");
 $whosMove = readline();
+
 
 //Print the blank board
 print_board();
 
 //Main while loop
 while(!$isWon) {
-//possible improvement: 2player and choose X/O
+//possible improvement: choose X/O
 
   move();
   print_board();
@@ -31,54 +40,75 @@ while(!$isWon) {
   }
 }
 
-//Send the winner or tie message based on winner and isTie
+//Send the winner or tie message based on winner and isTie and multiplayer
 function winMessage() {
   global $winner;
   global $isTie;
+  global $multiplayer;
 
   printf("\r\n");
   if($isTie) {
     printf ("Tie!");
   }
   else {
-    if($winner == "X") {
-      printf ("Player Wins!");
+    if(!$multiplayer) {
+      if($winner == "X") {
+        printf ("Player Wins!");
+      } else {
+        printf ("Bot Wins!");
+      }
     } else {
-      printf ("Bot Wins!");
+      if($winner == "X") {
+        printf ("Player 1 Wins!");
+      } else {
+        printf ("Player 2 Wins!");
+      }
     }
   }
   printf("\r\n");
 }
 
-//move function - switches between player and bot move starting with player if they said y
+//move function - switches between player and bot move starting with bot if they said n
 function move() {
   global $whosMove;
-  if ($whosMove == "y") {
-    playerMove();
-    $whosMove = "n";
+  global $multiplayer;
+  if ($whosMove == "n") {
+    if ($multiplayer) {
+      playerMove(2);
+    } else {
+      botMove();
+    }
+    $whosMove = "y";
   }
   else {
-    botMove();
-    $whosMove = "y";
+    playerMove(1);
+    $whosMove = "n";
   }
 }
 
 //Player move function
-function playerMove() {
+function playerMove($number) {
   global $TheBoard;
 
   //Ask for selection, store as $step, subtracting one so that the user chooses 1-9 not 0-8
   printf("\r\n");
-  printf ("Player Turn... (Enter a number 1-9)\r\n");
+  printf ("Player " . $number . " Turn... (Enter a number 1-9)\r\n");
   $step = intval(readline()) - 1;
 
   //If the selected tile is empty
-  if ($TheBoard[$step] == "_")
+  if ($TheBoard[$step] == "_") {
     //set user selected tile to X
-    $TheBoard[$step]='X';
-  else
+    if ($number == 1) {
+      $TheBoard[$step]='X';
+    }
+    if ($number == 2) {
+      $TheBoard[$step]='O';
+    }
+  }
+  else {
     //restart (select another tile that is blank)
-    playerMove();
+    playerMove($number);
+  }
 }
 
 //Bot move function
