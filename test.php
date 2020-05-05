@@ -13,47 +13,21 @@ printf("Welcome to TIC-TAC-TOE EXTREME Lite\r\n");
 //Ask who goes first and set variable (y=player first, anything else=bot first)
 printf("\r\n");
 printf ("Would you like to go first? (y/n)");
-$whoFirst = readline();
+$whosMove = readline();
 
 //Print the blank board
 print_board();
 
 //Main while loop
 while(!$isWon) {
-//possible improvement: move() function that calls playerMove() or botMove()/a second player alternatingly, starting with the one the user chooses. would allow one call of move() per main loop
-//also: ask player if they want X or O (ask first player if 2p)
+//possible improvement: 2player and choose X/O
 
-  //If player goes first
-  if ($whoFirst == "y") {
-    playerMove();
-    print_board();
-  }
-  //If bot goes first
-  else {
-    botMove();
-    print_board();
-  }
+  move();
+  print_board();
 
   checkWin();
   if($isWon) {
     winMessage();
-  }
-  else {
-    //If player goes first
-    if ($whoFirst == "y") {
-      botMove();
-      print_board();
-    }
-    //If bot goes first
-    else {
-      playerMove();
-      print_board();
-    }
-    
-    checkWin();
-    if($isWon) {
-      winMessage();
-    }
   }
 }
 
@@ -74,6 +48,19 @@ function winMessage() {
     }
   }
   printf("\r\n");
+}
+
+//move function - switches between player and bot move starting with player if they said y
+function move() {
+  global $whosMove;
+  if ($whosMove == "y") {
+    playerMove();
+    $whosMove = "n";
+  }
+  else {
+    botMove();
+    $whosMove = "y";
+  }
 }
 
 //Player move function
