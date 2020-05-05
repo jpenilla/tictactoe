@@ -69,7 +69,7 @@ function playerMove() {
   global $TheBoard;
 
   printf("\r\n");
-  printf ("Player Turn...\r\n");
+  printf ("Player Turn... (Enter a number 1-9)\r\n");
 
   $step = intval(readline()) - 1;
 
