@@ -5,9 +5,9 @@ $TheBoard=array(9);
 for ($i=0;$i<9;$i++) $TheBoard[$i]='_';
 
 //Initialize some global variables
-$isWon = false;
-$winner = "";
-$isTie = false;
+$isWon = array(false,false);
+$winner = array("","");
+$isTie = array(false,false);
 $multiplayer = false;
 $pl = array ("", "");
 
@@ -46,14 +46,12 @@ while($pl[0] == "") {
 print_board();
 
 //Main while loop
-while(!$isWon) {
-//possible improvement: choose X/O
-
+while(!$isWon[0]) {
   move();
   print_board();
 
-  checkWin();
-  if($isWon) {
+  checkWin($TheBoard, 0);
+  if($isWon[0]) {
     winMessage();
   }
 }
@@ -66,18 +64,18 @@ function winMessage() {
   global $pl;
 
   printf("\r\n");
-  if($isTie) {
+  if($isTie[0]) {
     printf ("Tie!");
   }
   else {
     if($multiplayer) {
-      if($winner == $pl[0]) {
+      if($winner[0] == $pl[0]) {
         printf ("Player 1 Wins!");
       } else {
         printf ("Player 2 Wins!");
       }
     } else {
-      if($winner == $pl[0]) {
+      if($winner[0] == $pl[0]) {
         printf ("Player Wins!");
       } else {
         printf ("Bot Wins!");
@@ -127,9 +125,13 @@ function playerMove($p) {
 }
 
 //Bot move function
+//todo: make it try to block player if possible, with high priority
+//todo: make it try to win if it has 2 in a row and a blank
 function botMove() {
   global $TheBoard;
   global $pl;
+  global $isWon;
+  $r;
   
   //this is set to true when the bot has decided on an empty spot to choose
   $done = false;
@@ -139,23 +141,36 @@ function botMove() {
 
   //loop until done is true
   while (!$done) {
-    //set the random spot to try if the middle is taken
-    $r = rand(0,8);
-
-    //if the middle is open take it
-    if ($TheBoard[4] == "_") {
-      //set r as it's used to print the bot's choice
-      $r = 4;
-      $TheBoard[$r] = $pl[1];
-      //end loop
-      $done = true;
+    for ($i=0;$i<9;$i++) {
+      $b = $TheBoard;
+      if ($b[$i] == "_") {
+        $b[$i] = $pl[1];
+        checkWin($b, 1);
+        if ($isWon[1] && !$done) {
+          $TheBoard[$i] = $pl[1];
+          $done = true;
+          $r = $i;
+        }
+      }
     }
-    else {
-      //if the middle is full and the randomly chosen spot is open set it
-      if ($TheBoard[$r] == "_") {
+    if (!$done) {
+      $r = rand(0,8);
+
+      //if the middle is open take it
+      if ($TheBoard[4] == "_") {
+        //set r as it's used to print the bot's choice
+        $r = 4;
         $TheBoard[$r] = $pl[1];
         //end loop
         $done = true;
+      }
+      else {
+      //if the middle is full and the randomly chosen spot is open set it
+        if ($TheBoard[$r] == "_") {
+          $TheBoard[$r] = $pl[1];
+        //end loop
+          $done = true;
+        }
       }
     }
   }
@@ -165,10 +180,9 @@ function botMove() {
 }
 
 //Update the isWon winner and isTie variables based on TheBoard and winconditions
-function checkWin() {
+function checkWin(array $board, int $a) {
   global $isWon;
   global $winner;
-  global $TheBoard;
   global $isTie;
 
   //this array contains the possible win conditions as strings of the 3 #s of TheBoard that must be all X or all O for a win
@@ -179,18 +193,18 @@ function checkWin() {
     //Create an array $split which has 3 values, which are each one of the numbers of the three for the win condition ie "3" "4" "5" for $winConditions[2]
     $split = str_split($value);
     //create an array $values which holds the current value of the board for each of the three spots for the wincondition ie "X" "X" "X" or "X" "O" "_"
-    $values = array($TheBoard[$split[0]], $TheBoard[$split[1]], $TheBoard[$split[2]]);
+    $values = array($board[$split[0]], $board[$split[1]], $board[$split[2]]);
     //if $values has 3 of the same value and is not all _ then we have a winner
     if(($values[0] != "_") && ($values[0] == $values[1]) && $values[2] == $values[0]) {
-      $isWon = true;
+      $isWon[$a] = true;
       //set winner based on what non-_ character filled all 3 of the wincondition spots
-      $winner = $values[0];
+      $winner[$a] = $values[0];
     }
   }
   //If the whole board is full (no _) and there is no winner, set the game as "won" to end the main loop, and set as a tie for the announcer
-  if (!in_array('_', $TheBoard) && !$isWon) {
-    $isWon = true;
-    $isTie = true;
+  if (!in_array('_', $board) && !$isWon[$a]) {
+    $isWon[$a] = true;
+    $isTie[$a] = true;
   }
 }
 
