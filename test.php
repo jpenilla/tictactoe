@@ -125,8 +125,6 @@ function playerMove($p) {
 }
 
 //Bot move function
-//todo: make it try to block player if possible, with high priority
-//todo: make it try to win if it has 2 in a row and a blank
 function botMove() {
   global $TheBoard;
   global $pl;
@@ -144,6 +142,13 @@ function botMove() {
     for ($i=0;$i<9;$i++) {
       $b = $TheBoard;
       if ($b[$i] == "_") {
+        $b[$i] = $pl[0];
+        checkWin($b, 1);
+        if ($isWon[1] && !$done) {
+          $TheBoard[$i] = $pl[1];
+          $done = true;
+          $r = $i;
+        }
         $b[$i] = $pl[1];
         checkWin($b, 1);
         if ($isWon[1] && !$done) {
